@@ -3,7 +3,11 @@ const supertest = require('supertest');
 const { expect } = require('chai');
 const mongoose = require('mongoose');
 
-const config = require('../server/config');
+require('dotenv').config();
+
+const env = process.env.NODE_ENV;
+const config = require('../server/config')[env];
+
 const app = require('../server/app')(config);
 
 // const server = http.createServer(app);

@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon ./server/bin/start",
     "start": "node ./server/bin/start",
-    "test": "mocha"
+    "test": "NODE_ENV=test mocha"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
