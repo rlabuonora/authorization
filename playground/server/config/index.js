@@ -3,7 +3,8 @@ require('dotenv').config();
 
 module.exports = {
   database: {
-    dsn: 'mongodb://localhost:37017/linkedin-node-authentication',
+    dsn:
+      'mongodb+srv://rlabuonora:rlabuonora@cluster0.nezlieo.mongodb.net/authorization',
     status: {
       connected: false,
       error: false,
