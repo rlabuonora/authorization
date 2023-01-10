@@ -35,6 +35,12 @@ describe('Connected', function () {
         console.log('Successfully dropped database');
       }
     });
+    // create user with credentials
+    const res = await supertest
+      .agent(app)
+      .post('/auth/register')
+      .send(validCredentials)
+      .redirects(1);
   });
 
   // disconnect
@@ -42,42 +48,39 @@ describe('Connected', function () {
     await mongoose.disconnect();
   });
 
-  it('Shows correct message when creating user', async function () {
+  it('With non existing user', async function () {
     const res = await supertest
       .agent(app)
-      .post('/auth/register')
+      .post('/auth/login')
+      .send({ ...validCredentials, username: 'nonexisting' })
+      .redirects(1);
+
+    expect(res.text).to.match(/Invalid username or email/);
+  });
+
+  it('With wrong password', async function () {
+    const res = await supertest
+      .agent(app)
+      .post('/auth/login')
+      .send({ ...validCredentials, password: 'wrong' })
+      .redirects(1);
+
+    expect(res.text).to.match(/Wrong password/);
+  });
+
+  it('With correct credentials', async function () {
+    const authenticated = supertest.agent(app);
+
+    const res = await authenticated
+      .post('/auth/login')
       .send(validCredentials)
       .redirects(1);
 
-    expect(res.text).to.match(/Your account was created!/);
-  });
+    // console.log(res.text);
+    expect(res.text).to.match(/You are logged in./);
+    expect(res.text).to.match(/rlabuonora/);
 
-  it('Show message with existing user', async function () {
-    const res = await supertest
-      .agent(app)
-      .post('/auth/register')
-      .send(validCredentials)
-      .redirects(1);
-
-    expect(res.text).to.match(
-      /The given email address or the username exist already!/
-    );
-  });
-
-  it('Sanitizes username and email', async function () {
-    const credentials = {
-      ...validCredentials,
-      username: 'elrafa',
-      email: 'RLABUONORA@yahoo.com',
-    };
-    const res = await supertest
-      .agent(app)
-      .post('/auth/register')
-      .send(credentials)
-      .redirects(1);
-
-    expect(res.text).to.match(
-      /The given email address or the username exist already!/
-    );
+    const res2 = await authenticated.get('/auth/logout').redirects(1);
+    expect(res2.text).to.match(/You are logged out/);
   });
 });

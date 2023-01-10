@@ -3,6 +3,7 @@ require('dotenv').config();
 
 module.exports = {
   development: {
+    port: 3000,
     database: {
       dsn:
         'mongodb+srv://rlabuonora:rlabuonora@cluster0.nezlieo.mongodb.net/authorization',
@@ -17,6 +18,7 @@ module.exports = {
     logger,
   },
   test: {
+    port: 3001,
     database: {
       dsn:
         'mongodb+srv://rlabuonora:rlabuonora@cluster0.nezlieo.mongodb.net/authorization_test',
