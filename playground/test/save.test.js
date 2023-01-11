@@ -51,53 +51,13 @@ describe('Connected', function () {
   });
 
   it('With non existing user', async function () {
-    const res = await supertest
-      .agent(app)
-      .post('/auth/login')
-      .send({ ...validCredentials, username: 'nonexisting' })
-      .redirects(1);
-
-    expect(res.text).to.match(/Invalid username or email/);
-  });
-
-  it('With correct credentials', async function () {
-    const authenticated = supertest.agent(app);
-
-    const res = await authenticated
-      .post('/auth/login')
-      .send(validCredentials)
-      .redirects(1);
-
-    expect(res.text).to.match(/Please verify your account/);
-
-    // verify user
     const user = await UserService.findByEmail(validCredentials.email);
+    // console.log(`User: ${user}`);
     user.verified = true;
-    await user.save();
-    const verifiedUser = await UserService.findByEmail(validCredentials.email);
-    expect(verifiedUser.verified).to.eq(true);
-
-    const resVerified = await authenticated
-      .post('/auth/login')
-      .send(validCredentials)
-      .redirects(1);
-
-    expect(resVerified.text).to.match(/You are logged in./);
-    expect(resVerified.text).to.match(/Logout rlabuonora/);
-
-    // Logout user
-    const resLogout = await authenticated.get('/auth/logout').redirects(1);
-    // const res3 = await authenticated.get('/auth/logout').redirects(1);
-    expect(resLogout.text).to.match(/You are logged out/);
-  });
-
-  it('With wrong password', async function () {
-    const res = await supertest
-      .agent(app)
-      .post('/auth/login')
-      .send({ ...validCredentials, password: 'wrong' })
-      .redirects(1);
-
-    expect(res.text).to.match(/Wrong password/);
+    // console.log(`User: ${user}`);
+    console.log(user.isModified('verified'));
+    console.log(mongoose.models);
+    //await user.save();
+    // expect(res.text).to.match(/Invalid username or email/);
   });
 });

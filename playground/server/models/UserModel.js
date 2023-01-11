@@ -50,13 +50,16 @@ async function generateHash(password) {
 userSchema.pre('save', function preSave(next) {
   const user = this;
   if (user.isModified('password')) {
-    return generateHash(this.password)
+    return generateHash(user.password)
       .then((hash) => {
         user.password = hash;
         return next();
       })
-      .catch((err) => next(err));
+      .catch((err) => {
+        return next(err);
+      });
   }
+  return next();
 });
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
