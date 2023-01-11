@@ -10,7 +10,6 @@ module.exports = () => {
    * GET route that verifies a user by their token
    */
   router.get('/verify/:userId/:token', async (req, res, next) => {
-    console.log('Here');
     try {
       /**
        * @todo: Validate verification credentials and verify if valid
