@@ -1,7 +1,7 @@
 const { Router } = require('express');
 // eslint-disable-next-line no-unused-vars
 const UserService = require('../../services/UserService');
-
+const passport = require('passport');
 const router = Router();
 
 module.exports = () => {
@@ -15,64 +15,23 @@ module.exports = () => {
   /**
    * POST route to process the login form or display it again along with an error message in case validation fails
    */
-  router.post('/login', async (req, res, next) => {
-    try {
-      const errors = [];
-      /**
-       * @todo: Try to find the user in the database and try to validate the password
-       */
-      // non existing user;
-      // console.log(req.body.email);
-      const user = await UserService.findByUsername(req.body.username);
-      // console.log(user);
-      if (!user) {
-        errors.push('email');
-        errors.push('password');
+  router.post(
+    '/login',
+    passport.authenticate('local', {
+      failureRedirect: '/auth/login',
+    }),
+    async (req, res, next) => {
+      try {
         req.session.messages.push({
-          text: 'Invalid username or email',
-          type: 'danger',
+          text: 'You are logged in.',
+          type: 'success',
         });
-      } else if (user && !user.verified) {
-        errors.push('email');
-        errors.push('password');
-
-        req.session.messages.push({
-          type: 'danger',
-          text: 'Please verify your account.',
-        });
-      } else {
-        const check = await user.comparePassword(req.body.password);
-        if (!check) {
-          errors.push('password');
-          req.session.messages.push({
-            text: 'Wrong password',
-            type: 'danger',
-          });
-        }
+        return res.redirect('/');
+      } catch (err) {
+        return next(err);
       }
-      if (errors.length) {
-        // Render the page again and show the errors
-        return res.render('auth/login', {
-          page: 'login',
-          data: req.body,
-          errors,
-        });
-      }
-      /**
-       * @todo: Log the user in by saving the userid to the session and redirect to the index page
-       * @todo: Don't forget about 'Remember me'!
-       */
-
-      req.session.userId = user.id;
-      req.session.messages.push({
-        text: 'You are logged in.',
-        type: 'success',
-      });
-      return res.redirect('/');
-    } catch (err) {
-      return next(err);
     }
-  });
+  );
 
   /**
    * GET route to log a user out

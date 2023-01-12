@@ -22,6 +22,8 @@
     "http-errors": "^1.7.3",
     "mocha": "^10.2.0",
     "mongoose": "^5.11.15",
+    "passport": "^0.5.3",
+    "passport-local": "^1.0.0",
     "pino": "^6.11.2",
     "pino-pretty": "^4.7.1",
     "supertest": "^6.3.3"
