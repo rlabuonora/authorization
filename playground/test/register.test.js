@@ -3,12 +3,14 @@ const supertest = require('supertest');
 const { expect } = require('chai');
 const mongoose = require('mongoose');
 
+const { getAlert } = require('./utils');
+
 require('dotenv').config();
 
 const env = process.env.NODE_ENV;
 const config = require('../server/config')[env];
 
-const app = require('../server/app')(config);
+// const app = require('../server/app')(config);
 
 // const server = http.createServer(app);
 
@@ -42,19 +44,22 @@ describe('Connected', function () {
     await mongoose.disconnect();
   });
 
+  // Idea: start app manually and send to localhost:3000
   it('Shows correct message when creating user', async function () {
     const res = await supertest
-      .agent(app)
+      .agent('http://localhost:3000')
       .post('/auth/register')
       .send(validCredentials)
       .redirects(1);
 
-    expect(res.text).to.match(/Your account was created!/);
+    const actual = getAlert(res);
+
+    expect(actual).to.eq('Your account was created!');
   });
 
   it('Show message with existing user', async function () {
     const res = await supertest
-      .agent(app)
+      .agent('http://localhost:3000')
       .post('/auth/register')
       .send(validCredentials)
       .redirects(1);
@@ -71,7 +76,7 @@ describe('Connected', function () {
       email: 'RLABUONORA@yahoo.com',
     };
     const res = await supertest
-      .agent(app)
+      .agent('http://localhost:3000')
       .post('/auth/register')
       .send(credentials)
       .redirects(1);

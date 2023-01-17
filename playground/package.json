@@ -7,11 +7,13 @@
   "scripts": {
     "dev": "nodemon ./server/bin/start",
     "start": "node ./server/bin/start",
+    "test_server": "NODE_ENV=test nodemon ./server/bin/start",
     "test": "NODE_ENV=test mocha"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
     "chai": "^4.3.7",
+    "cheerio": "^1.0.0-rc.12",
     "cookie-parser": "^1.4.4",
     "cookie-session": "^1.4.0",
     "cors": "^2.8.5",
@@ -26,6 +28,7 @@
     "passport-local": "^1.0.0",
     "pino": "^6.11.2",
     "pino-pretty": "^4.7.1",
+    "pupeteer": "^0.0.1",
     "supertest": "^6.3.3"
   },
   "devDependencies": {
