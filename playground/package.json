@@ -14,6 +14,7 @@
     "bcrypt": "^5.1.0",
     "chai": "^4.3.7",
     "cheerio": "^1.0.0-rc.12",
+    "connect-session-sequelize": "^7.1.5",
     "cookie-parser": "^1.4.4",
     "cookie-session": "^1.4.0",
     "cors": "^2.8.5",
@@ -26,9 +27,13 @@
     "mongoose": "^5.11.15",
     "passport": "^0.5.3",
     "passport-local": "^1.0.0",
+    "pg": "^8.8.0",
+    "pg-hstore": "^2.3.4",
     "pino": "^6.11.2",
     "pino-pretty": "^4.7.1",
     "pupeteer": "^0.0.1",
+    "sequelize": "^6.28.0",
+    "sequelize-cli": "^6.5.2",
     "supertest": "^6.3.3"
   },
   "devDependencies": {

@@ -4,6 +4,13 @@ require('dotenv').config();
 module.exports = {
   development: {
     port: 3000,
+    postgres: {
+      username: 'rlabuonora',
+      password: null,
+      database: 'authorization',
+      host: '127.0.0.1',
+      dialect: 'postgres',
+    },
     database: {
       dsn:
         'mongodb+srv://rlabuonora:rlabuonora@cluster0.nezlieo.mongodb.net/authorization',
@@ -19,6 +26,13 @@ module.exports = {
   },
   test: {
     port: 3001,
+    postgres: {
+      username: 'rlabuonora',
+      password: null,
+      database: 'authorization_test',
+      host: '127.0.0.1',
+      dialect: 'postgres',
+    },
     database: {
       dsn:
         'mongodb+srv://rlabuonora:rlabuonora@cluster0.nezlieo.mongodb.net/authorization_test',
