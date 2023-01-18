@@ -11,7 +11,11 @@ require('dotenv').config();
 const env = process.env.NODE_ENV;
 const config = require('../server/config')[env];
 
-// const app = require('../server/app')(config);
+const models = require('../server/models');
+
+config.sequelize = models.sequelize;
+
+const app = require('../server/app')(config);
 
 // const server = http.createServer(app);
 
@@ -43,11 +47,12 @@ describe('Connected', function () {
   // disconnect
   after(async function () {
     await mongoose.disconnect();
+    await models.sequelize.close();
   });
 
   it('Manually persisting cookies and redirecting works!', function (done) {
     let cookie;
-    supertest('http://localhost:3000')
+    supertest(app)
       .post('/auth/register')
       .send({
         username: 'rlabuonora',
@@ -57,7 +62,7 @@ describe('Connected', function () {
       })
       .end(function (err, res) {
         cookie = res.headers['set-cookie'];
-        const res2 = supertest('http://localhost:3000')
+        const res2 = supertest(app)
           .get('/auth/login')
           .set('cookie', cookie)
           .end((err, res) => {
