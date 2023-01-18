@@ -11,15 +11,15 @@ require('dotenv').config();
 const env = process.env.NODE_ENV;
 const config = require('../server/config')[env];
 
-const models = require('../server/models');
+// const models = require('../server/models');
 
-config.sequelize = models.sequelize;
+// config.sequelize = models.sequelize;
 
-const app = require('../server/app')(config);
+//const app = require('../server/app')(config);
 
 // const server = http.createServer(app);
 
-describe('Connected', function () {
+describe('Connected', function foo() {
   this.timeout(10000);
   const validCredentials = {
     username: 'rlabuonora',
@@ -47,76 +47,41 @@ describe('Connected', function () {
   // disconnect
   after(async function () {
     await mongoose.disconnect();
-    await models.sequelize.close();
+    // await models.sequelize.close();
   });
 
-  it('Manually persisting cookies and redirecting works!', function (done) {
-    let cookie;
-    supertest(app)
+  it('Manually persisting cookies and redirecting works', async function () {
+    const res1 = await supertest('http://localhost:3000')
       .post('/auth/register')
       .send({
         username: 'rlabuonora',
         email: 'rlabuonora@yahoo.com',
         password: 'Montevideo',
         confirmPassword: 'Montevideo',
-      })
-      .end(function (err, res) {
-        cookie = res.headers['set-cookie'];
-        const res2 = supertest(app)
-          .get('/auth/login')
-          .set('cookie', cookie)
-          .end((err, res) => {
-            const actual = getAlert(res);
-            expect(actual).to.eq('Your account was created!');
-          });
-
-        done();
       });
+
+    const cookie = res1.headers['set-cookie'];
+    const res2 = await supertest('http://localhost:3000')
+      .get('/auth/login')
+      .set('cookie', cookie);
+
+    const actual = getAlert(res2);
+    expect(actual).to.eq('Your account was created!');
   });
 
-  // Idea: start app manually and send to localhost:3000
-  xit('Shows correct message when creating user', async function () {
-    const res = await supertest
-      .agent('http://localhost:3000')
+  it('Manually persisting cookies and redirecting works', async function () {
+    const res1 = await supertest('http://localhost:3000')
       .post('/auth/register')
       .send({
         username: 'rlabuonora',
         email: 'rlabuonora@yahoo.com',
         password: 'Montevideo',
         confirmPassword: 'Montevideo',
-      })
-      .redirects(1);
+      });
 
-    console.log(res.headers['set-cookie']);
-    //console.log(res.text);
-  });
-
-  xit('Show message with existing user', async function () {
-    const res = await supertest
-      .agent('http://localhost:3000')
-      .post('/auth/register')
-      .send(validCredentials)
-      .redirects(1);
-
-    expect(res.text).to.match(
-      /The given email address or the username exist already!/
-    );
-  });
-
-  xit('Sanitizes username and email', async function () {
-    const credentials = {
-      ...validCredentials,
-      username: 'elrafa',
-      email: 'RLABUONORA@yahoo.com',
-    };
-    const res = await supertest
-      .agent('http://localhost:3000')
-      .post('/auth/register')
-      .send(credentials)
-      .redirects(1);
-
-    expect(res.text).to.match(
-      /The given email address or the username exist already!/
+    const actual = getAlert(res1);
+    expect(actual).to.eq(
+      'The given email address or the username exist already!'
     );
   });
 });
