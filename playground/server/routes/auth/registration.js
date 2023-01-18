@@ -27,6 +27,7 @@ module.exports = () => {
     validation.validatePassword,
     validation.validatePasswordMatch,
     async (req, res, next) => {
+      console.log(`Cookies: ${req.headers.cookie}`);
       try {
         // This block deals with processing the validation input
         const validationErrors = validation.validationResult(req);
@@ -78,7 +79,7 @@ module.exports = () => {
           text: 'Your account was created!',
           type: 'success',
         });
-
+        console.log(`Redirecting ${req.session.messages[0]}`);
         return res.redirect('/auth/login');
       } catch (err) {
         return next(err);

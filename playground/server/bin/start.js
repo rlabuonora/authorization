@@ -8,7 +8,12 @@ const http = require('http');
 require('dotenv').config();
 
 const env = process.env.NODE_ENV || 'development';
+
+const models = require('../models');
+
 const config = require('../config')[env];
+
+config.sequelize = models.sequelize;
 
 const { logger } = config;
 

@@ -9,6 +9,9 @@ module.exports = () => {
    * GET route to display the login form
    */
   router.get('/login', (req, res) => {
+    console.log(`Login Cookies: ${req.headers.cookie}`);
+    console.log(req.session.messages);
+
     res.render('auth/login', { page: 'login' });
   });
 

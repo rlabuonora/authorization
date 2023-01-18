@@ -1,8 +1,10 @@
-const cookieParser = require('cookie-parser');
 const express = require('express');
 const httpErrors = require('http-errors');
 const path = require('path');
-const session = require('cookie-session');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+
 const setupPassport = require('./lib/passport');
 
 // We are using cookie based sessions
@@ -40,29 +42,25 @@ module.exports = (config) => {
   app.use(express.static(path.join(__dirname, '../public')));
 
   // Initialize session management with cookie-session
+  app.use(cookieParser());
   app.use(
     session({
+      store: new SequelizeStore({
+        db: config.sequelize,
+      }),
       name: 'session',
-      keys: [
-        'a set',
-        'of keys',
-        'used',
-        'to encrypt',
-        'the session',
-        'change in',
-        'production',
-      ],
-      resave: false,
-      saveUninitialized: true,
-      sameSite: 'strict',
-      maxAge: null,
+      cookie: {
+        secure: false,
+        maxAge: 60000,
+      },
+      secret: 'dogs',
+      saveUninitialized: false,
     })
   );
 
   // See express body parsers for more information
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
-  app.use(cookieParser());
 
   app.use(passport.initialize());
   app.use(passport.session());
