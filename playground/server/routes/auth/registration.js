@@ -27,7 +27,6 @@ module.exports = () => {
     validation.validatePassword,
     validation.validatePasswordMatch,
     async (req, res, next) => {
-      console.log(`Cookies: ${req.headers.cookie}`);
       try {
         // This block deals with processing the validation input
         const validationErrors = validation.validationResult(req);

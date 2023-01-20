@@ -54,6 +54,7 @@ module.exports = (config) => {
         maxAge: 60000,
       },
       secret: 'dogs',
+      resave: false,
       saveUninitialized: false,
     })
   );

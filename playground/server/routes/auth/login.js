@@ -41,7 +41,7 @@ module.exports = () => {
    * @todo: Implement
    */
   router.get('/logout', (req, res) => {
-    req.session.userId = null;
+    req.logout();
     req.session.messages.push({
       type: 'info',
       text: 'You are logged out.',

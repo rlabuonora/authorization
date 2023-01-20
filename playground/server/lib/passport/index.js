@@ -17,6 +17,7 @@ module.exports = (config) => {
       async (req, username, password, done) => {
         try {
           const user = await UserService.findByUsername(req.body.username);
+          console.log(`user: ${user}`);
           if (!user) {
             req.session.messages.push({
               text: 'Invalid username or email',
@@ -52,6 +53,7 @@ module.exports = (config) => {
     done(null, user.id);
   });
   passport.deserializeUser(async (id, done) => {
+    console.log(`deserializing user: ${id}`);
     try {
       const user = await UserService.findById(id);
       return done(null, user);

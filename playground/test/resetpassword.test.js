@@ -2,6 +2,7 @@ const http = require('http');
 const supertest = require('supertest');
 const { expect } = require('chai');
 const mongoose = require('mongoose');
+const { getAlert } = require('./utils');
 
 const UserService = require('../server/services/UserService');
 
@@ -9,6 +10,10 @@ require('dotenv').config();
 
 const env = process.env.NODE_ENV;
 const config = require('../server/config')[env];
+
+const models = require('../server/models');
+
+config.sequelize = models.sequelize;
 
 const app = require('../server/app')(config);
 
@@ -53,12 +58,13 @@ describe('Connected', function () {
     const user = await UserService.findByEmail(validCredentials.email);
     const verifyToken = user.verificationToken;
     const verifyUrl = `/auth/verify/${user.id}/${verifyToken}`;
-    await supertest.agent(app).get(verifyUrl);
+    const res = await supertest.agent(app).get(verifyUrl).redirects(1);
   });
 
   // disconnect
   after(async function () {
     await mongoose.disconnect();
+    await models.sequelize.close();
   });
 
   it('With correct credentials', async function () {
@@ -87,17 +93,30 @@ describe('Connected', function () {
     const passwordChange = await supertest
       .agent(app)
       .post(resetUrl)
-      .send({ password: 'newpassword', confirmPassword: 'newpassword' })
-      .redirects(1);
+      .send({ password: 'newpassword', confirmPassword: 'newpassword' });
 
-    expect(passwordChange.text).to.match(/Password changed/);
+    const cookie = passwordChange.headers['set-cookie'];
+    const redirectUrl = passwordChange.headers.location;
+
+    const res4 = await supertest
+      .agent(app)
+      .get(redirectUrl)
+      .set('cookie', cookie);
+
+    expect(res4.text).to.match(/Password changed/);
     // login with new credentials
+
     const loginUser = await supertest
       .agent(app)
       .post('/auth/login')
       .send({ username: validCredentials.username, password: 'newpassword' })
-      .redirects(1);
+      .set('cookie', cookie);
 
-    expect(loginUser.text).to.match(/Logout rlabuonora/);
+    const redirectUrl2 = loginUser.headers.location;
+    const foo = await supertest
+      .agent(app)
+      .get(redirectUrl2)
+      .set('cookie', cookie);
+    expect(foo.text).to.match(/Logout rlabuonora/);
   });
 });

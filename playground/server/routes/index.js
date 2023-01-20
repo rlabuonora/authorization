@@ -10,6 +10,7 @@ const router = Router();
 module.exports = (params) => {
   /* GET index page. */
   router.get('/', (req, res) => {
+    console.log(req.session.user);
     res.render('index', { page: 'index' });
   });
 
