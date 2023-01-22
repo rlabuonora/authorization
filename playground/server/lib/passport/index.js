@@ -17,7 +17,6 @@ module.exports = (config) => {
       async (req, username, password, done) => {
         try {
           const user = await UserService.findByUsername(req.body.username);
-          console.log(`user: ${user}`);
           if (!user) {
             req.session.messages.push({
               text: 'Invalid username or email',
@@ -26,15 +25,13 @@ module.exports = (config) => {
             return done(null, false);
           }
           if (user && !user.verified) {
-            console.log(user);
-            console.log(user.verified);
             req.session.messages.push({
               type: 'danger',
               text: 'Please verify your account.',
             });
             return done(null, false);
           }
-          const check = await user.comparePassword(req.body.password);
+          const check = await user.validPassword(req.body.password);
           if (!check) {
             req.session.messages.push({
               text: 'Wrong password',
@@ -53,7 +50,6 @@ module.exports = (config) => {
     done(null, user.id);
   });
   passport.deserializeUser(async (id, done) => {
-    console.log(`deserializing user: ${id}`);
     try {
       const user = await UserService.findById(id);
       return done(null, user);

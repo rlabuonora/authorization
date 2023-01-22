@@ -1,5 +1,4 @@
 // First we have to bring in mongoose
-const mongoose = require('mongoose');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
